@@ -74,6 +74,65 @@ const PHONE = "+91 97121 48373";
     document.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("is-visible"); });
   }
 
+  /* ---------- Blogs & News: filters ---------- */
+  var filterBtns = document.querySelectorAll(".filter");
+  var posts = document.querySelectorAll(".post");
+  var emptyMsg = document.getElementById("postsEmpty");
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var f = btn.getAttribute("data-filter");
+      filterBtns.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-pressed", String(on));
+      });
+      var shown = 0;
+      posts.forEach(function (post) {
+        var match = f === "all" || post.getAttribute("data-category") === f;
+        post.hidden = !match;
+        if (match) { shown++; post.classList.add("is-visible"); }
+      });
+      if (emptyMsg) emptyMsg.hidden = shown > 0;
+    });
+  });
+
+  /* ---------- Blogs & News: post reader ---------- */
+  var modal = document.getElementById("postModal");
+  var modalImg = document.getElementById("modalImg");
+  var modalMeta = document.getElementById("modalMeta");
+  var modalTitle = document.getElementById("modalTitle");
+  var modalContent = document.getElementById("modalContent");
+  var lastFocus = null;
+
+  function openPost(post) {
+    var img = post.querySelector(".post__img");
+    modalImg.src = img.getAttribute("src");
+    modalImg.alt = img.getAttribute("alt");
+    modalMeta.innerHTML = post.querySelector(".post__meta").innerHTML;
+    modalTitle.textContent = post.querySelector(".post__title").textContent;
+    modalContent.innerHTML = post.querySelector(".post__full").innerHTML;
+    lastFocus = document.activeElement;
+    modal.hidden = false;
+    document.body.classList.add("no-scroll");
+    modal.querySelector(".modal__close").focus();
+  }
+  function closePost() {
+    if (modal.hidden) return;
+    modal.hidden = true;
+    document.body.classList.remove("no-scroll");
+    if (lastFocus) lastFocus.focus();
+  }
+
+  document.querySelectorAll(".post__open").forEach(function (btn) {
+    btn.addEventListener("click", function () { openPost(btn.closest(".post")); });
+  });
+  modal.addEventListener("click", function (e) {
+    if (e.target.closest("[data-close]") || e.target.closest(".js-close-modal")) closePost();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closePost();
+  });
+
   /* ---------- Contact form ---------- */
   var form = document.getElementById("contactForm");
   var status = document.getElementById("formStatus");
