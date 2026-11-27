@@ -66,7 +66,13 @@ const PHONE = "+91 97121 48373";
 
     var revealer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
-        if (entry.isIntersecting) { entry.target.classList.add("is-visible"); revealer.unobserve(entry.target); }
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          el.classList.add("is-visible");
+          revealer.unobserve(el);
+          // Clear the stagger delay once revealed so hover effects respond instantly
+          setTimeout(function () { el.style.setProperty("--d", "0s"); }, 1600);
+        }
       });
     }, { threshold: 0.12 });
     document.querySelectorAll(".reveal").forEach(function (el) { revealer.observe(el); });
